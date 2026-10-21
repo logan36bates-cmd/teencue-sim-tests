@@ -1,7 +1,12 @@
-# The main parent flows for the demo parent (one teen, Sam, no plan): Home,
-# the teen page, the paywall, pairing, Activity, Account, Updates, Delete
-# account (opened, never confirmed) and sign out. Every step takes a
-# screenshot, so a layout problem shows up even when nothing fails.
+# The main parent flows for the demo parent (one child, Sam, no plan): Home,
+# the child's page, the paywall and its creator code field, the sample
+# dashboard a closed paywall leads to, Connect without a plan, Activity,
+# Account, Updates, Delete account (opened, never confirmed) and sign out.
+# Every step takes a screenshot, so a layout problem shows up even when
+# nothing fails.
+#
+# iOS has no system back for Maestro: every way out is the screen's own
+# control ("Back" in a native header, "Close", "I’ll finish later").
 appId: ${APP_ID}
 ---
 - runFlow:
@@ -11,10 +16,10 @@ appId: ${APP_ID}
       PASSWORD: ${REVIEW_PASSWORD}
 - takeScreenshot: 03-home
 
-# The teen page, and the paywall from its plan card.
+# The child's page, and the paywall from its plan card.
 - tapOn: "Sam"
 - waitForAnimationToEnd
-- takeScreenshot: 04-teen
+- takeScreenshot: 04-child
 - scrollUntilVisible:
     element: "See plans|Choose a TeenCue plan"
     direction: DOWN
@@ -23,46 +28,69 @@ appId: ${APP_ID}
 - tapOn:
     text: "See plans|Choose a TeenCue plan"
     optional: true
-- waitForAnimationToEnd:
-    timeout: 15000
+- extendedWaitUntil:
+    visible: "Sam.s plan is ready"
+    timeout: 30000
+    optional: true
 - takeScreenshot: 05-paywall
 - scroll
 - takeScreenshot: 06-paywall-terms
+- tapOn:
+    text: 'Have a creator code\?'
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: 07-paywall-creator-code
 - scroll
-- takeScreenshot: 07-paywall-links
-- back
+- takeScreenshot: 08-paywall-links
 
-# Pairing, from Home.
-- tapOn: "Home, your family"
+# Closing the paywall: the sample dashboard, with a way back to the plans.
+- tapOn: "Close"
+- extendedWaitUntil:
+    visible: "Go to TeenCue"
+    timeout: 15000
+- takeScreenshot: 09-sample-dashboard
+- tapOn: "Go to TeenCue"
+- extendedWaitUntil:
+    visible: "Home, your family"
+    timeout: 15000
+
+# Connect without a plan: the Subscribe card, and "I’ll finish later" back Home.
 - tapOn:
-    text: "Add .*computer|Finish setup"
+    text: "Finish setup"
     optional: true
 - waitForAnimationToEnd
-- takeScreenshot: 08-pairing-computer
-- back
+- takeScreenshot: 10-connect-first-device
 - tapOn:
-    text: "Add .*iPhone.*|Set up their iPhone.*"
+    text: "I.ll finish later"
+    optional: true
+- extendedWaitUntil:
+    visible: "Home, your family"
+    timeout: 15000
+- tapOn:
+    text: "Add Sam.s (iPhone or iPad|computer)"
     optional: true
 - waitForAnimationToEnd
-- takeScreenshot: 09-pairing-iphone
-- back
+- takeScreenshot: 11-connect-other-device
+- tapOn:
+    text: "I.ll finish later"
+    optional: true
 
 # Activity and Account.
 - tapOn: "Activity, recent AI use"
-- takeScreenshot: 10-activity
+- takeScreenshot: 12-activity
 - tapOn: "Account, plan and settings"
-- takeScreenshot: 11-account
+- takeScreenshot: 13-account
 - tapOn: "Heads-up and weekly brief"
 - waitForAnimationToEnd
-- takeScreenshot: 12-updates
-- back
+- takeScreenshot: 14-updates
+- tapOn: "Back"
 - scrollUntilVisible:
     element: "Delete account"
     direction: DOWN
 - tapOn: "Delete account"
 - waitForAnimationToEnd
-- takeScreenshot: 13-delete-account
-- back
+- takeScreenshot: 15-delete-account
+- tapOn: "Back"
 
 # Sign out.
 - scrollUntilVisible:
@@ -75,4 +103,4 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible: "Get started"
     timeout: 20000
-- takeScreenshot: 14-signed-out
+- takeScreenshot: 16-signed-out

@@ -1,0 +1,120 @@
+# A new parent from a fresh install, signed out the whole way: the five
+# questions, building the plan, the plan, Save your plan, and the sample
+# dashboard its close leads to. Never creates an account or writes anything.
+# Then the start of setting up a child's iPhone or iPad, as far as the code
+# screen (pairing needs a real code and a second device).
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    permissions:
+      notifications: deny
+- extendedWaitUntil:
+    visible: "Get started"
+    timeout: 60000
+- tapOn: "Get started"
+
+# 1 of 5: who.
+- extendedWaitUntil:
+    visible: 'Who are you setting TeenCue up for\?'
+    timeout: 15000
+- tapOn: "Their first name or nickname"
+- inputText: "Maya"
+- hideKeyboard
+- tapOn: "13-15"
+- takeScreenshot: 20-who
+- tapOn: "Continue"
+
+# 2 of 5: apps.
+- extendedWaitUntil:
+    visible: 'Which AI apps does Maya use\?'
+    timeout: 15000
+- tapOn: "ChatGPT"
+- tapOn: "Character.AI"
+- takeScreenshot: 21-apps
+- tapOn: "Continue"
+
+# 3 of 5: concerns.
+- extendedWaitUntil:
+    visible: "What would you most want to know about.*"
+    timeout: 15000
+- tapOn: "AI companions"
+- tapOn: "Mental health"
+- takeScreenshot: 22-concerns
+- tapOn: "Continue"
+
+# 4 of 5: devices, with the Family Sharing question for an iPhone or iPad.
+- extendedWaitUntil:
+    visible: 'Where does Maya use AI\?'
+    timeout: 15000
+- tapOn: "iPhone or iPad"
+- tapOn: 'Computer \(Chrome or Edge\)'
+- tapOn: "Yes"
+- takeScreenshot: 23-devices
+- tapOn: "Continue"
+
+# 5 of 5: updates.
+- extendedWaitUntil:
+    visible: 'How should we keep you posted\?'
+    timeout: 15000
+- takeScreenshot: 24-updates
+- tapOn: "Continue"
+
+# Building, then the plan.
+- takeScreenshot: 25-building
+- extendedWaitUntil:
+    visible: "See my plan"
+    timeout: 20000
+- takeScreenshot: 26-plan
+- scroll
+- takeScreenshot: 27-plan-coverage
+- tapOn: "See my plan"
+
+# Save your plan: stop before any account is made.
+- extendedWaitUntil:
+    visible: "Save your plan"
+    timeout: 15000
+- takeScreenshot: 28-save-plan
+- tapOn: "Close"
+- extendedWaitUntil:
+    visible: "Pick up where I left off"
+    timeout: 15000
+- takeScreenshot: 29-sample-dashboard-signed-out
+
+# The child's device, from the start screen. Clear state first: the draft
+# above would otherwise send this launch back into the questions.
+- launchApp:
+    clearState: true
+    permissions:
+      notifications: deny
+- extendedWaitUntil:
+    visible: "Get started"
+    timeout: 60000
+- scrollUntilVisible:
+    element: "Set up my child.s iPhone or iPad"
+    direction: DOWN
+    timeout: 10000
+    optional: true
+# Optional throughout: the link is only offered where Family Controls is
+# present in the build.
+- tapOn:
+    text: "Set up my child.s iPhone or iPad"
+    optional: true
+- extendedWaitUntil:
+    visible: "Set up your teen.s (iPhone|iPad)"
+    timeout: 15000
+    optional: true
+- takeScreenshot: 40-device-welcome
+- tapOn:
+    text: "This is my teen.s (iPhone|iPad)"
+    optional: true
+- extendedWaitUntil:
+    visible: "Scan the code from your phone"
+    timeout: 15000
+    optional: true
+- takeScreenshot: 41-device-scan
+- tapOn:
+    text: "Enter a code instead"
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: 42-device-code

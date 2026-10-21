@@ -2,7 +2,8 @@
 # Simulator helpers for .github/workflows/simulator-screens.yml.
 #
 #   sim.sh boot "<device type name>"       create and boot that device on the newest iOS runtime
-#   sim.sh walk <slug> <ipad true|false>   run the flows at the default and largest text size
+#   sim.sh walk <slug> <ipad true|false>   run the flows (onboarding, main, iPad landscape)
+#                                          at the default and largest text size
 #
 # Only the screenshots the flows take on purpose (and Maestro's failure
 # screenshots) are kept, in screens/. Maestro's own debug output stays in
@@ -64,6 +65,7 @@ if [ "$cmd" = walk ]; then
   for size in large accessibility-extra-extra-extra-large; do
     label=$([ "$size" = large ] && echo default || echo ax5)
     xcrun simctl ui booted content_size "$size" || echo "content_size $size not supported here"
+    run_flow onboarding.yaml "$root/screens/$slug/$label-onboarding" "$root/maestro-debug/$slug/$label-onboarding"
     run_flow main.yaml "$root/screens/$slug/$label" "$root/maestro-debug/$slug/$label"
     if [ "$ipad" = true ]; then
       out="$root/screens/$slug/$label-landscape"

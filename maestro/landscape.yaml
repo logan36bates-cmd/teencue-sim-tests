@@ -1,5 +1,5 @@
-# iPad in landscape: Home, the teen page and the paywall. Ends in portrait so
-# the next run starts upright.
+# iPad in landscape: Home, the child's page and the paywall. Ends in portrait
+# so the next run starts upright.
 appId: ${APP_ID}
 ---
 - setOrientation: LANDSCAPE_LEFT
@@ -11,7 +11,7 @@ appId: ${APP_ID}
 - takeScreenshot: 30-landscape-home
 - tapOn: "Sam"
 - waitForAnimationToEnd
-- takeScreenshot: 31-landscape-teen
+- takeScreenshot: 31-landscape-child
 - scrollUntilVisible:
     element: "See plans|Choose a TeenCue plan"
     direction: DOWN

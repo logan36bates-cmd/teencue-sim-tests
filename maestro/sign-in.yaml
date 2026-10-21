@@ -33,7 +33,3 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible: "Home, your family"
     timeout: 30000
-# A first sign-in on this device may offer heads-ups first.
-- tapOn:
-    text: "Not now"
-    optional: true
