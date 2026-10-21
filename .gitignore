@@ -1,0 +1,7 @@
+*.app
+*.zip
+*.tgz
+*.enc
+app/
+screens/
+maestro-debug/

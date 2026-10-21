@@ -1,0 +1,97 @@
+# Installs an iOS simulator build from EAS on iPad and iPhone simulators and
+# walks the main flows with Maestro, at the default text size and the largest
+# accessibility size. The screenshots are encrypted before upload, kept 1 day.
+#
+# Manual only: it never runs for pull requests, so a fork cannot reach the
+# secrets. Secrets: EXPO_TOKEN (a Viewer robot), REVIEW_EMAIL, REVIEW_PASSWORD,
+# ARTIFACT_KEY. No secret value is ever echoed.
+name: Simulator screens
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_id:
+        description: EAS build ID of the iOS simulator build
+        required: true
+      intel:
+        description: Use the Intel macOS runners (the arm64 pool is sometimes full)
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  screens:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { image: macos-26, device: 'iPad Pro 13-inch (M5)', slug: ipad-pro-13, ipad: true }
+          - { image: macos-26, device: 'iPad Air 11-inch (M4)', slug: ipad-air-11, ipad: true }
+          - { image: macos-26, device: 'iPad mini (A17 Pro)', slug: ipad-mini, ipad: true }
+          - { image: macos-26, device: 'iPhone 17 Pro Max', slug: iphone-17-pro-max, ipad: false }
+          - { image: macos-15, device: 'iPhone SE (3rd generation)', slug: iphone-se, ipad: false }
+    runs-on: ${{ inputs.intel && format('{0}-intel', matrix.image) || matrix.image }}
+    timeout-minutes: 75
+    env:
+      APP_ID: com.teencue.mobile
+      REVIEW_EMAIL: ${{ secrets.REVIEW_EMAIL }}
+      REVIEW_PASSWORD: ${{ secrets.REVIEW_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Install Maestro
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+      - name: Download the simulator build from EAS
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          BUILD_ID: ${{ inputs.build_id }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$BUILD_ID" =~ ^[0-9a-f-]{36}$ ]]; then echo "build_id must be an EAS build UUID" >&2; exit 1; fi
+          query=$(python3 -c 'import json,sys; print(json.dumps({"query": "query($id: ID!) { builds { byId(buildId: $id) { status platform artifacts { buildUrl } } } }", "variables": {"id": sys.argv[1]}}))' "$BUILD_ID")
+          url=$(curl -fsS https://api.expo.dev/graphql \
+            -H "Authorization: Bearer $EXPO_TOKEN" -H 'Content-Type: application/json' \
+            --data "$query" | python3 -c '
+          import json, sys
+          b = json.load(sys.stdin)["data"]["builds"]["byId"]
+          if b["status"] != "FINISHED" or b["platform"] != "IOS":
+              sys.exit("The build is %s on %s, not a finished iOS build" % (b["status"], b["platform"]))
+          print(b["artifacts"]["buildUrl"])')
+          # A signed download link: never shown in the public log.
+          echo "::add-mask::$url"
+          curl -fsSL "$url" -o app.tar.gz
+          mkdir -p app && tar -xzf app.tar.gz -C app
+          app=$(find app -maxdepth 4 -name '*.app' -type d | head -n 1)
+          if [ -z "$app" ]; then echo "No .app in the build" >&2; exit 1; fi
+          echo "APP_PATH=$app" >> "$GITHUB_ENV"
+      - name: Create and boot the simulator
+        run: scripts/sim.sh boot "${{ matrix.device }}"
+      - name: Install the app
+        run: xcrun simctl install booted "$APP_PATH"
+      - name: Walk the flows at each text size
+        run: scripts/sim.sh walk "${{ matrix.slug }}" "${{ matrix.ipad }}"
+      - name: Encrypt the screenshots
+        if: always()
+        env:
+          ARTIFACT_KEY: ${{ secrets.ARTIFACT_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p screens
+          tar -czf screens.tgz screens
+          openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -md sha256 -salt \
+            -pass env:ARTIFACT_KEY -in screens.tgz -out "screens-${{ matrix.slug }}.tgz.enc"
+          rm -f screens.tgz
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screens-${{ matrix.slug }}
+          path: screens-${{ matrix.slug }}.tgz.enc
+          retention-days: 1
+          if-no-files-found: error

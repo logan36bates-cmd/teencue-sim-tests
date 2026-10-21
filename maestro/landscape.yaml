@@ -1,0 +1,26 @@
+# iPad in landscape: Home, the teen page and the paywall. Ends in portrait so
+# the next run starts upright.
+appId: ${APP_ID}
+---
+- setOrientation: LANDSCAPE_LEFT
+- runFlow:
+    file: sign-in.yaml
+    env:
+      EMAIL: ${REVIEW_EMAIL}
+      PASSWORD: ${REVIEW_PASSWORD}
+- takeScreenshot: 30-landscape-home
+- tapOn: "Sam"
+- waitForAnimationToEnd
+- takeScreenshot: 31-landscape-teen
+- scrollUntilVisible:
+    element: "See plans|Choose a TeenCue plan"
+    direction: DOWN
+    timeout: 15000
+    optional: true
+- tapOn:
+    text: "See plans|Choose a TeenCue plan"
+    optional: true
+- waitForAnimationToEnd:
+    timeout: 15000
+- takeScreenshot: 32-landscape-paywall
+- setOrientation: PORTRAIT

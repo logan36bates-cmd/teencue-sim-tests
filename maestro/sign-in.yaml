@@ -1,0 +1,39 @@
+# Sign in from a fresh install. EMAIL and PASSWORD come from the caller's env.
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    permissions:
+      notifications: deny
+- extendedWaitUntil:
+    visible: "Get started"
+    timeout: 60000
+- takeScreenshot: 01-welcome
+- scrollUntilVisible:
+    element: "Already have an account.*"
+    direction: DOWN
+    timeout: 10000
+    optional: true
+- tapOn: "Sign in"
+- extendedWaitUntil:
+    visible: "Welcome back"
+    timeout: 15000
+- takeScreenshot: 02-sign-in
+- tapOn: "you@example.com"
+- inputText: ${EMAIL}
+- tapOn: "Your password"
+- inputText: ${PASSWORD}
+- hideKeyboard
+# Let the layout settle after the keyboard closes before tapping.
+- waitForAnimationToEnd:
+    timeout: 3000
+- tapOn:
+    text: "Sign in"
+    index: 0
+- extendedWaitUntil:
+    visible: "Home, your family"
+    timeout: 30000
+# A first sign-in on this device may offer heads-ups first.
+- tapOn:
+    text: "Not now"
+    optional: true
