@@ -88,12 +88,13 @@ if [ "$cmd" = walk ]; then
   root="$PWD"
   flows="$root/maestro"
   status=0
-  for size in large accessibility-extra-extra-extra-large; do
+  # SIZES and LANDSCAPE narrow a run to the App Store screenshots.
+  for size in ${SIZES:-large accessibility-extra-extra-extra-large}; do
     label=$([ "$size" = large ] && echo default || echo ax5)
     xcrun simctl ui booted content_size "$size" || echo "content_size $size not supported here"
     run_flow onboarding.yaml "$root/screens/$slug/$label-onboarding" "$root/maestro-debug/$slug/$label-onboarding"
     run_flow main.yaml "$root/screens/$slug/$label" "$root/maestro-debug/$slug/$label"
-    if [ "$ipad" = true ]; then
+    if [ "$ipad" = true ] && [ "${LANDSCAPE:-true}" = true ]; then
       out="$root/screens/$slug/$label-landscape"
       run_flow landscape.yaml "$out" "$root/maestro-debug/$slug/$label-landscape"
       # The simulator saves landscape screenshots sideways: turn them upright.

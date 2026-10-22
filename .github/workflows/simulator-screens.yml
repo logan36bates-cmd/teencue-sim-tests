@@ -17,6 +17,10 @@ on:
         description: Use the Intel macOS runners (the arm64 pool is sometimes full)
         type: boolean
         default: true
+      submission:
+        description: App Store screenshots only (iPad Pro 13 and iPhone 17 Pro Max, default text size, no landscape)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -25,13 +29,10 @@ jobs:
   screens:
     strategy:
       fail-fast: false
+      # The two App Store sizes (13" iPad, 6.9" iPhone) come first; a
+      # submission run stops there.
       matrix:
-        include:
-          - { image: macos-26, device: 'iPad Pro 13-inch (M5)', slug: ipad-pro-13, ipad: true }
-          - { image: macos-26, device: 'iPad Air 11-inch (M4)', slug: ipad-air-11, ipad: true }
-          - { image: macos-26, device: 'iPad mini (A17 Pro)', slug: ipad-mini, ipad: true }
-          - { image: macos-26, device: 'iPhone 17 Pro Max', slug: iphone-17-pro-max, ipad: false }
-          - { image: macos-15, device: 'iPhone SE (3rd generation)', slug: iphone-se, ipad: false }
+        include: ${{ fromJSON(inputs.submission && '[{"image":"macos-26","device":"iPad Pro 13-inch (M5)","slug":"ipad-pro-13","ipad":true},{"image":"macos-26","device":"iPhone 17 Pro Max","slug":"iphone-17-pro-max","ipad":false}]' || '[{"image":"macos-26","device":"iPad Pro 13-inch (M5)","slug":"ipad-pro-13","ipad":true},{"image":"macos-26","device":"iPhone 17 Pro Max","slug":"iphone-17-pro-max","ipad":false},{"image":"macos-26","device":"iPad Air 11-inch (M4)","slug":"ipad-air-11","ipad":true},{"image":"macos-26","device":"iPad mini (A17 Pro)","slug":"ipad-mini","ipad":true},{"image":"macos-15","device":"iPhone SE (3rd generation)","slug":"iphone-se","ipad":false}]') }}
     runs-on: ${{ inputs.intel && format('{0}-intel', matrix.image) || matrix.image }}
     timeout-minutes: 120
     env:
@@ -76,6 +77,9 @@ jobs:
       - name: Install the app
         run: xcrun simctl install booted "$APP_PATH"
       - name: Walk the flows at each text size
+        env:
+          SIZES: ${{ inputs.submission && 'large' || '' }}
+          LANDSCAPE: ${{ inputs.submission && 'false' || 'true' }}
         run: scripts/sim.sh walk "${{ matrix.slug }}" "${{ matrix.ipad }}"
       - name: Encrypt the screenshots
         if: always()
