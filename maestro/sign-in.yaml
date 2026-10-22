@@ -44,6 +44,7 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible: "Not Now|Finish setting up.*|Home, your family"
     timeout: 30000
+    optional: true
 # On the iPads the sheet arrived a few seconds after Home (run 6), so it is
 # dismissed for as long as Home cannot be read.
 - repeat:
@@ -54,6 +55,15 @@ appId: ${APP_ID}
       - tapOn:
           text: "Not Now"
           optional: true
+      # On the iPad Pro 13 the sheet is drawn outside the app and Maestro
+      # cannot read it (run 8), so Not Now is tapped where it sits. Below
+      # the sheet, that spot on Home is empty.
+      - runFlow:
+          when:
+            true: ${DEVICE == 'ipad-pro-13'}
+          commands:
+            - tapOn:
+                point: "43%,57%"
       - waitForAnimationToEnd
 - extendedWaitUntil:
     visible: "Home, your family"

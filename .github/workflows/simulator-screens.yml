@@ -80,6 +80,7 @@ jobs:
         env:
           SIZES: ${{ inputs.submission && 'large' || '' }}
           LANDSCAPE: ${{ inputs.submission && 'false' || 'true' }}
+          RETRY: ${{ inputs.submission && '1' || '0' }}
         run: scripts/sim.sh walk "${{ matrix.slug }}" "${{ matrix.ipad }}"
       - name: Encrypt the screenshots
         if: always()

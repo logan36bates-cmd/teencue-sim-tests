@@ -63,24 +63,31 @@ run_flow() {
   # A flow that wedges is stopped after 15 minutes, so the other flows and
   # the encrypted upload still happen (run 2: the XCTest driver timed out on
   # the iPad Pro 13 and Maestro hung until the job was cancelled).
-  local code=0
-  perl -e 'alarm shift; exec @ARGV' 900 maestro test "$flows/$flow" \
-    -e APP_ID="$APP_ID" -e REVIEW_EMAIL="$REVIEW_EMAIL" -e REVIEW_PASSWORD="$REVIEW_PASSWORD" \
-    --test-output-dir "$debug" || code=$?
-  collect "$debug" "$out"
+  # A submission run (RETRY=1) tries a failed flow once more on a restarted
+  # simulator: run 8 lost every iPad onboarding screen to one driver start.
+  local tries=1 attempt code
+  [ "${RETRY:-0}" = 1 ] && tries=2
+  for attempt in $(seq 1 "$tries"); do
+    code=0
+    perl -e 'alarm shift; exec @ARGV' 900 maestro test "$flows/$flow" \
+      -e APP_ID="$APP_ID" -e REVIEW_EMAIL="$REVIEW_EMAIL" -e REVIEW_PASSWORD="$REVIEW_PASSWORD" \
+      -e DEVICE="$slug" --test-output-dir "$debug" || code=$?
+    collect "$debug" "$out"
+    [ "$code" -eq 0 ] && break
+    # 142 is the alarm. Once the XCTest driver wedges it never starts again on
+    # that simulator (run 5: every later flow on macos-26 failed with "iOS
+    # driver not ready"), so the simulator is restarted before going on.
+    if [ "$code" -eq 142 ] || [ "$attempt" -lt "$tries" ]; then
+      echo "Flow $flow failed (exit $code, attempt $attempt): restarting the simulator"
+      pkill -f maestro-driver || true
+      pkill -f xcodebuild || true
+      local udid; udid=$(cat "$root/.sim-udid")
+      xcrun simctl shutdown "$udid" || true
+      start_sim "$udid"
+      xcrun simctl ui booted content_size "$size" || true
+    fi
+  done
   [ "$code" -eq 0 ] || status=1
-  # 142 is the alarm. Once the XCTest driver wedges it never starts again on
-  # that simulator (run 5: every later flow on macos-26 failed with "iOS
-  # driver not ready"), so the simulator is restarted for the next flow.
-  if [ "$code" -eq 142 ]; then
-    echo "Flow $flow stopped after 15 minutes: restarting the simulator"
-    pkill -f maestro-driver || true
-    pkill -f xcodebuild || true
-    local udid; udid=$(cat "$root/.sim-udid")
-    xcrun simctl shutdown "$udid" || true
-    start_sim "$udid"
-    xcrun simctl ui booted content_size "$size" || true
-  fi
 }
 
 if [ "$cmd" = walk ]; then
