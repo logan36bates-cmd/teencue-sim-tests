@@ -23,12 +23,12 @@ appId: ${APP_ID}
 - waitForAnimationToEnd
 - takeScreenshot: 04-account-plan
 - scrollUntilVisible:
-    element: "See plans|Choose a TeenCue plan"
+    element: "See plans.*|Choose a TeenCue plan.*"
     direction: DOWN
     timeout: 15000
     optional: true
 - tapOn:
-    text: "See plans|Choose a TeenCue plan"
+    text: "See plans.*|Choose a TeenCue plan.*"
     optional: true
 - extendedWaitUntil:
     visible: "Sam.s plan is ready"
