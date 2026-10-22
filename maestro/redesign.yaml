@@ -1,12 +1,15 @@
 # Before/after screenshots for the calm pass (teencue-mobile 63303ef).
 # Every teen-mode screen and every loading state, opened by deep link.
 # `?shot=` and /gallery work only in a screenshot build (EXPO_PUBLIC_SCREENSHOT_GALLERY).
+# Each shot starts the app fresh (stopApp), so a screen opened twice in a
+# row with a different ?shot= is not reused with its old state.
 # iOS asks "Open in TeenCue?" for each link: Open is tapped.
 # Skeletons pulse forever, so waits are fixed pauses, never waitForAnimationToEnd.
 appId: ${APP_ID}
 ---
 - launchApp:
     clearState: true
+- stopApp
 - openLink: "teencue://teen-device/welcome"
 - tapOn:
     text: "Open"
@@ -24,6 +27,7 @@ appId: ${APP_ID}
     timeout: 1500
     optional: true
 - takeScreenshot: t01b-welcome-own-device
+- stopApp
 - openLink: "teencue://teen-device/code"
 - tapOn:
     text: "Open"
@@ -43,6 +47,7 @@ appId: ${APP_ID}
 - takeScreenshot: t04-code-typing
 - hideKeyboard:
     optional: true
+- stopApp
 - openLink: "teencue://teen-device/code?shot=connecting"
 - tapOn:
     text: "Open"
@@ -52,6 +57,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: t03-code-connecting
+- stopApp
 - openLink: "teencue://teen-device/agree"
 - tapOn:
     text: "Open"
@@ -67,6 +73,7 @@ appId: ${APP_ID}
     timeout: 1000
     optional: true
 - takeScreenshot: t05b-agree-scrolled
+- stopApp
 - openLink: "teencue://teen-device/screen-time"
 - tapOn:
     text: "Open"
@@ -76,6 +83,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: t06-screen-time
+- stopApp
 - openLink: "teencue://teen-device/safari"
 - tapOn:
     text: "Open"
@@ -85,6 +93,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: t07-safari
+- stopApp
 - openLink: "teencue://teen-device/extension"
 - tapOn:
     text: "Open"
@@ -94,6 +103,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: t08-extension
+- stopApp
 - openLink: "teencue://teen-device/restrict"
 - tapOn:
     text: "Open"
@@ -103,6 +113,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: t09-restrict
+- stopApp
 - openLink: "teencue://teen-device/blocked?look=1"
 - tapOn:
     text: "Open"
@@ -112,6 +123,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: t10-apps-to-look-for
+- stopApp
 - openLink: "teencue://teen-device/done?shot=applying"
 - tapOn:
     text: "Open"
@@ -121,6 +133,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: t11-done-applying
+- stopApp
 - openLink: "teencue://teen-device/done?shot=done"
 - tapOn:
     text: "Open"
@@ -130,6 +143,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: t12-done
+- stopApp
 - openLink: "teencue://teen-device/blocked"
 - tapOn:
     text: "Open"
@@ -139,6 +153,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: t13-blocked-apps
+- stopApp
 - openLink: "teencue://teen-device/home"
 - tapOn:
     text: "Open"
@@ -148,6 +163,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: t14-home-needs-attention
+- stopApp
 - openLink: "teencue://teen-device/home?shot=working"
 - tapOn:
     text: "Open"
@@ -157,6 +173,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: t15-home-working
+- stopApp
 - openLink: "teencue://teen-device/sees"
 - tapOn:
     text: "Open"
@@ -166,6 +183,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: t16-what-your-parent-sees
+- stopApp
 - openLink: "teencue://gallery?shot=paywall"
 - tapOn:
     text: "Open"
@@ -175,6 +193,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: s-paywall
+- stopApp
 - openLink: "teencue://gallery?shot=full"
 - tapOn:
     text: "Open"
@@ -184,6 +203,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: s-full
+- stopApp
 - openLink: "teencue://gallery?shot=account"
 - tapOn:
     text: "Open"
@@ -193,6 +213,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: s-account
+- stopApp
 - openLink: "teencue://gallery?shot=updates"
 - tapOn:
     text: "Open"
@@ -202,6 +223,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: s-updates
+- stopApp
 - openLink: "teencue://gallery?shot=button"
 - tapOn:
     text: "Open"
@@ -211,6 +233,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: s-button
+- stopApp
 - openLink: "teencue://gallery?shot=connect"
 - tapOn:
     text: "Open"
@@ -220,6 +243,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: s-connect
+- stopApp
 - openLink: "teencue://gallery?shot=event"
 - tapOn:
     text: "Open"
@@ -229,6 +253,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: s-event
+- stopApp
 - openLink: "teencue://gallery?shot=save"
 - tapOn:
     text: "Open"
@@ -238,6 +263,7 @@ appId: ${APP_ID}
     timeout: 2500
     optional: true
 - takeScreenshot: s-save
+- stopApp
 - openLink: "teencue://gallery?shot=status"
 - tapOn:
     text: "Open"
