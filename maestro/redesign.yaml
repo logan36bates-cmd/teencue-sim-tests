@@ -1,0 +1,176 @@
+# Before/after screenshots for the calm pass (teencue-mobile 63303ef).
+# Every teen-mode screen and every loading state, opened by deep link.
+# `?shot=` and /gallery work only in a screenshot build (EXPO_PUBLIC_SCREENSHOT_GALLERY).
+# Skeletons pulse forever, so waits are fixed pauses, never waitForAnimationToEnd.
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+- openLink: "teencue://teen-device/welcome"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: t01-welcome
+- tapOn:
+    text: "This is my own (iPhone|iPad)"
+    optional: true
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 1500
+    optional: true
+- takeScreenshot: t01b-welcome-own-device
+- openLink: "teencue://teen-device/code"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: t02-code-scan
+- tapOn:
+    text: "Enter a code instead"
+    optional: true
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 1500
+    optional: true
+- takeScreenshot: t04-code-typing
+- hideKeyboard:
+    optional: true
+- openLink: "teencue://teen-device/code?shot=connecting"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: t03-code-connecting
+- openLink: "teencue://teen-device/agree"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: t05-agree
+- scroll
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 1000
+    optional: true
+- takeScreenshot: t05b-agree-scrolled
+- openLink: "teencue://teen-device/screen-time"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: t06-screen-time
+- openLink: "teencue://teen-device/safari"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: t07-safari
+- openLink: "teencue://teen-device/extension"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: t08-extension
+- openLink: "teencue://teen-device/restrict"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: t09-restrict
+- openLink: "teencue://teen-device/blocked?look=1"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: t10-apps-to-look-for
+- openLink: "teencue://teen-device/done?shot=applying"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: t11-done-applying
+- openLink: "teencue://teen-device/done?shot=done"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: t12-done
+- openLink: "teencue://teen-device/blocked"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: t13-blocked-apps
+- openLink: "teencue://teen-device/home"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: t14-home-needs-attention
+- openLink: "teencue://teen-device/home?shot=working"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: t15-home-working
+- openLink: "teencue://teen-device/sees"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: t16-what-your-parent-sees
+- openLink: "teencue://gallery?shot=paywall"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: s-paywall
+- openLink: "teencue://gallery?shot=full"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: s-full
+- openLink: "teencue://gallery?shot=account"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: s-account
+- openLink: "teencue://gallery?shot=updates"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: s-updates
+- openLink: "teencue://gallery?shot=button"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: s-button
+- openLink: "teencue://gallery?shot=connect"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: s-connect
+- openLink: "teencue://gallery?shot=event"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: s-event
+- openLink: "teencue://gallery?shot=save"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: s-save
+- openLink: "teencue://gallery?shot=status"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: s-status

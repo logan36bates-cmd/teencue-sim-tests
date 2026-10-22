@@ -21,6 +21,10 @@ on:
         description: App Store screenshots only (iPad Pro 13 and iPhone 17 Pro Max, default text size, no landscape)
         type: boolean
         default: false
+      flows:
+        description: Flows to run instead of onboarding and main, e.g. "redesign main" (blank for the usual)
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -81,6 +85,7 @@ jobs:
           SIZES: ${{ inputs.submission && 'large' || '' }}
           LANDSCAPE: ${{ inputs.submission && 'false' || 'true' }}
           RETRY: ${{ inputs.submission && '1' || '0' }}
+          FLOWS: ${{ inputs.flows }}
         run: scripts/sim.sh walk "${{ matrix.slug }}" "${{ matrix.ipad }}"
       - name: Encrypt the screenshots
         if: always()

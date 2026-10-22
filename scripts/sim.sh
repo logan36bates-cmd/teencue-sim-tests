@@ -99,8 +99,15 @@ if [ "$cmd" = walk ]; then
   for size in ${SIZES:-large accessibility-extra-extra-extra-large}; do
     label=$([ "$size" = large ] && echo default || echo ax5)
     xcrun simctl ui booted content_size "$size" || echo "content_size $size not supported here"
-    run_flow onboarding.yaml "$root/screens/$slug/$label-onboarding" "$root/maestro-debug/$slug/$label-onboarding"
-    run_flow main.yaml "$root/screens/$slug/$label" "$root/maestro-debug/$slug/$label"
+    if [ -n "${FLOWS:-}" ]; then
+      # FLOWS names the flows to run instead, e.g. "redesign main".
+      for f in $FLOWS; do
+        run_flow "$f.yaml" "$root/screens/$slug/$label-$f" "$root/maestro-debug/$slug/$label-$f"
+      done
+    else
+      run_flow onboarding.yaml "$root/screens/$slug/$label-onboarding" "$root/maestro-debug/$slug/$label-onboarding"
+      run_flow main.yaml "$root/screens/$slug/$label" "$root/maestro-debug/$slug/$label"
+    fi
     if [ "$ipad" = true ] && [ "${LANDSCAPE:-true}" = true ]; then
       out="$root/screens/$slug/$label-landscape"
       run_flow landscape.yaml "$out" "$root/maestro-debug/$slug/$label-landscape"

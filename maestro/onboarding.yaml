@@ -171,7 +171,7 @@ appId: ${APP_ID}
     text: "This is my teen.s (iPhone|iPad)"
     optional: true
 - extendedWaitUntil:
-    visible: "Scan the code from your phone"
+    visible: "Scan the code (from|on) your phone"
     timeout: 25000
     optional: true
 - takeScreenshot: 41-device-scan
