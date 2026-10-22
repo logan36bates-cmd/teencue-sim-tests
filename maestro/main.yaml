@@ -51,9 +51,15 @@ appId: ${APP_ID}
     text: "Close"
     optional: true
 - extendedWaitUntil:
-    visible: "Go to TeenCue"
+    visible: "A sample of what.*"
     timeout: 15000
 - takeScreenshot: 09-sample-dashboard
+# At AX5 the heading alone fills the screen (run 6).
+- scrollUntilVisible:
+    element: "Go to TeenCue"
+    direction: DOWN
+    visibilityPercentage: 50
+    timeout: 30000
 - tapOn: "Go to TeenCue"
 - extendedWaitUntil:
     visible: "Home, your family"

@@ -15,7 +15,8 @@ appId: ${APP_ID}
 - scrollUntilVisible:
     element: "Get started"
     direction: DOWN
-    timeout: 20000
+    # At AX5 on the iPhone SE the Welcome copy is long: 20 s was not enough (run 6).
+    timeout: 60000
     # At AX5 the button sat in full view and 100% still failed (run 2).
     # Centring it failed everywhere (run 3): it is pinned and cannot move.
     visibilityPercentage: 50
@@ -53,6 +54,12 @@ appId: ${APP_ID}
     visibilityPercentage: 50
     timeout: 10000
 - tapOn: "ChatGPT"
+# Below the fold on the iPads at AX5 (run 6).
+- scrollUntilVisible:
+    element: "Character.AI"
+    direction: DOWN
+    visibilityPercentage: 50
+    timeout: 10000
 - tapOn: "Character.AI"
 - takeScreenshot: 21-apps
 - waitForAnimationToEnd
