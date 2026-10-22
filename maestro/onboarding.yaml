@@ -17,8 +17,8 @@ appId: ${APP_ID}
     direction: DOWN
     timeout: 20000
     # At AX5 the button sat in full view and 100% still failed (run 2).
+    # Centring it failed everywhere (run 3): it is pinned and cannot move.
     visibilityPercentage: 50
-    centerElement: true
 - tapOn: "Get started"
 
 # 1 of 5: who.
