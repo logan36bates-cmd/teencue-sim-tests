@@ -16,14 +16,12 @@ appId: ${APP_ID}
       PASSWORD: ${REVIEW_PASSWORD}
 - takeScreenshot: 03-home
 
-# The child's page, and the paywall from its plan card.
-- scrollUntilVisible:
-    element: "Sam"
-    direction: DOWN
-    timeout: 15000
-- tapOn: "Sam"
+# The paywall, from the plan card in Account. A child who is not set up yet
+# has no row on Home (the setup card is the screen), so there is no child
+# page to start from.
+- tapOn: "Account, plan and settings"
 - waitForAnimationToEnd
-- takeScreenshot: 04-child
+- takeScreenshot: 04-account-plan
 - scrollUntilVisible:
     element: "See plans|Choose a TeenCue plan"
     direction: DOWN

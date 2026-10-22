@@ -13,6 +13,9 @@ appId: ${APP_ID}
     element: "Get started"
     direction: DOWN
     timeout: 20000
+    # At AX5 the button sat in full view and 100% still failed (run 2).
+    visibilityPercentage: 50
+    centerElement: true
 - takeScreenshot: 01-welcome
 - scrollUntilVisible:
     element: "Already have an account.*"
@@ -26,18 +29,26 @@ appId: ${APP_ID}
 - takeScreenshot: 02-sign-in
 - tapOn: "you@example.com"
 - inputText: ${EMAIL}
-- tapOn: "Your password"
+# Return on the email field moves to the password. On an iPhone SE the
+# keyboard covers the password field, and a tap on it typed the password
+# into the email (run 2).
+- pressKey: Enter
 - inputText: ${PASSWORD}
 # The password field's return key is "Go": it signs in. Tapping the button
 # after closing the keyboard raced the sign-in it had already started.
 - pressKey: Enter
-# iOS offers to save the password once per install.
+# iOS offers to save the password once per install, sometimes only after
+# Home is up, and Home cannot be read while the sheet covers it.
+- extendedWaitUntil:
+    visible: "Not Now|Finish setting up.*|Home, your family"
+    timeout: 30000
+- tapOn:
+    text: "Not Now"
+    optional: true
+- waitForAnimationToEnd
 - tapOn:
     text: "Not Now"
     optional: true
 - extendedWaitUntil:
     visible: "Home, your family"
     timeout: 30000
-- tapOn:
-    text: "Not Now"
-    optional: true

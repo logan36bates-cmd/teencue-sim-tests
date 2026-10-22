@@ -33,7 +33,7 @@ jobs:
           - { image: macos-26, device: 'iPhone 17 Pro Max', slug: iphone-17-pro-max, ipad: false }
           - { image: macos-15, device: 'iPhone SE (3rd generation)', slug: iphone-se, ipad: false }
     runs-on: ${{ inputs.intel && format('{0}-intel', matrix.image) || matrix.image }}
-    timeout-minutes: 75
+    timeout-minutes: 120
     env:
       APP_ID: com.teencue.mobile
       REVIEW_EMAIL: ${{ secrets.REVIEW_EMAIL }}

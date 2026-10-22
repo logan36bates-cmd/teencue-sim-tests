@@ -10,6 +10,9 @@
 # maestro-debug/, which is never uploaded: it can contain the text a flow typed.
 set -euo pipefail
 
+# The Intel runners start the XCTest driver slowly.
+export MAESTRO_DRIVER_STARTUP_TIMEOUT=180000
+
 cmd="$1"; shift
 
 if [ "$cmd" = boot ]; then
@@ -51,7 +54,10 @@ collect() {
 
 run_flow() {
   local flow="$1" out="$2" debug="$3"
-  maestro test "$flows/$flow" \
+  # A flow that wedges is stopped after 20 minutes, so the other flows and
+  # the encrypted upload still happen (run 2: the XCTest driver timed out on
+  # the iPad Pro 13 and Maestro hung until the job was cancelled).
+  perl -e 'alarm shift; exec @ARGV' 1200 maestro test "$flows/$flow" \
     -e APP_ID="$APP_ID" -e REVIEW_EMAIL="$REVIEW_EMAIL" -e REVIEW_PASSWORD="$REVIEW_PASSWORD" \
     --test-output-dir "$debug" || status=1
   collect "$debug" "$out"
