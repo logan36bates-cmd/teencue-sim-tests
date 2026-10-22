@@ -9,6 +9,10 @@ appId: ${APP_ID}
       EMAIL: ${REVIEW_EMAIL}
       PASSWORD: ${REVIEW_PASSWORD}
 - takeScreenshot: 30-landscape-home
+- scrollUntilVisible:
+    element: "Sam"
+    direction: DOWN
+    timeout: 15000
 - tapOn: "Sam"
 - waitForAnimationToEnd
 - takeScreenshot: 31-landscape-child

@@ -1,4 +1,5 @@
 # Sign in from a fresh install. EMAIL and PASSWORD come from the caller's env.
+# Works at every text size: at the largest one the buttons are below the fold.
 appId: ${APP_ID}
 ---
 - launchApp:
@@ -6,8 +7,12 @@ appId: ${APP_ID}
     permissions:
       notifications: deny
 - extendedWaitUntil:
-    visible: "Get started"
+    visible: "TeenCue|TEENCUE"
     timeout: 60000
+- scrollUntilVisible:
+    element: "Get started"
+    direction: DOWN
+    timeout: 20000
 - takeScreenshot: 01-welcome
 - scrollUntilVisible:
     element: "Already have an account.*"
@@ -23,13 +28,16 @@ appId: ${APP_ID}
 - inputText: ${EMAIL}
 - tapOn: "Your password"
 - inputText: ${PASSWORD}
-- hideKeyboard
-# Let the layout settle after the keyboard closes before tapping.
-- waitForAnimationToEnd:
-    timeout: 3000
+# The password field's return key is "Go": it signs in. Tapping the button
+# after closing the keyboard raced the sign-in it had already started.
+- pressKey: Enter
+# iOS offers to save the password once per install.
 - tapOn:
-    text: "Sign in"
-    index: 0
+    text: "Not Now"
+    optional: true
 - extendedWaitUntil:
     visible: "Home, your family"
     timeout: 30000
+- tapOn:
+    text: "Not Now"
+    optional: true

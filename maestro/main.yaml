@@ -17,6 +17,10 @@ appId: ${APP_ID}
 - takeScreenshot: 03-home
 
 # The child's page, and the paywall from its plan card.
+- scrollUntilVisible:
+    element: "Sam"
+    direction: DOWN
+    timeout: 15000
 - tapOn: "Sam"
 - waitForAnimationToEnd
 - takeScreenshot: 04-child
@@ -44,7 +48,9 @@ appId: ${APP_ID}
 - takeScreenshot: 08-paywall-links
 
 # Closing the paywall: the sample dashboard, with a way back to the plans.
-- tapOn: "Close"
+- tapOn:
+    text: "Close"
+    optional: true
 - extendedWaitUntil:
     visible: "Go to TeenCue"
     timeout: 15000
@@ -55,6 +61,11 @@ appId: ${APP_ID}
     timeout: 15000
 
 # Connect without a plan: the Subscribe card, and "I’ll finish later" back Home.
+- scrollUntilVisible:
+    element: "Finish setup"
+    direction: DOWN
+    timeout: 10000
+    optional: true
 - tapOn:
     text: "Finish setup"
     optional: true
@@ -80,6 +91,10 @@ appId: ${APP_ID}
 - takeScreenshot: 12-activity
 - tapOn: "Account, plan and settings"
 - takeScreenshot: 13-account
+- scrollUntilVisible:
+    element: "Heads-up and weekly brief"
+    direction: DOWN
+    timeout: 15000
 - tapOn: "Heads-up and weekly brief"
 - waitForAnimationToEnd
 - takeScreenshot: 14-updates
@@ -101,6 +116,6 @@ appId: ${APP_ID}
     text: "Sign out"
     optional: true
 - extendedWaitUntil:
-    visible: "Get started"
+    visible: "TeenCue|TEENCUE"
     timeout: 20000
 - takeScreenshot: 16-signed-out
