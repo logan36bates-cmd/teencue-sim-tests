@@ -1,0 +1,156 @@
+# The parent walkthrough round (teencue-mobile 769e34e to cb89219), from a
+# fresh install, signed out the whole way: white multi-select cards, DeepSeek
+# and Poe in the apps question, the "Something else" topic field, no Building
+# screen between the questions and the plan, and the plan's coverage line.
+# Never types in the topic field and never creates an account, so nothing is
+# written to the server.
+#
+# Not reachable here: the one-time AI consent, "Email me this link" and the
+# iPhone pairing code all need an account with a plan, and the demo account
+# has none.
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    permissions:
+      notifications: deny
+- extendedWaitUntil:
+    visible: "TeenCue|TEENCUE"
+    timeout: 60000
+- scrollUntilVisible:
+    element: "Get started"
+    direction: DOWN
+    timeout: 60000
+    visibilityPercentage: 50
+- tapOn: "Get started"
+
+# Who.
+- extendedWaitUntil:
+    visible: 'Who are you setting TeenCue up for\?'
+    timeout: 25000
+- tapOn: "Their first name or nickname"
+- inputText: "Maya"
+- pressKey: Enter
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element: "13.15"
+    direction: DOWN
+    timeout: 10000
+- tapOn: "13.15"
+- takeScreenshot: w01-who
+- scrollUntilVisible:
+    element: "Continue"
+    direction: DOWN
+    timeout: 10000
+- tapOn: "Continue"
+
+# Apps: white cards, with DeepSeek and Poe picked.
+- extendedWaitUntil:
+    visible: 'Which AI apps does Maya use\?'
+    timeout: 25000
+- scrollUntilVisible:
+    element: "ChatGPT"
+    direction: DOWN
+    visibilityPercentage: 50
+    timeout: 10000
+- tapOn: "ChatGPT"
+- takeScreenshot: w02-apps-top
+- scrollUntilVisible:
+    element: "DeepSeek"
+    direction: DOWN
+    visibilityPercentage: 100
+    timeout: 10000
+- tapOn: "DeepSeek"
+- scrollUntilVisible:
+    element: "Poe"
+    direction: DOWN
+    visibilityPercentage: 100
+    timeout: 10000
+- tapOn: "Poe"
+- waitForAnimationToEnd
+- takeScreenshot: w03-apps-deepseek-poe
+- scrollUntilVisible:
+    element: "Snapchat.*"
+    direction: DOWN
+    visibilityPercentage: 100
+    timeout: 10000
+    optional: true
+- tapOn:
+    text: "Snapchat.*"
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: w04-apps-end
+- scrollUntilVisible:
+    element: "Continue"
+    direction: DOWN
+    timeout: 10000
+- tapOn: "Continue"
+
+# Topics: two picked, then the "Something else" field, left empty.
+- extendedWaitUntil:
+    visible: "What would you most want to know about.*"
+    timeout: 25000
+- tapOn: "AI companions"
+- scrollUntilVisible:
+    element: "Mental health"
+    direction: DOWN
+    visibilityPercentage: 50
+    timeout: 10000
+- tapOn: "Mental health"
+- takeScreenshot: w05-topics
+- scrollUntilVisible:
+    element: "Something else.*"
+    direction: DOWN
+    visibilityPercentage: 100
+    timeout: 10000
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: w06-topics-something-else
+- scrollUntilVisible:
+    element: "Continue"
+    direction: DOWN
+    timeout: 10000
+- tapOn: "Continue"
+
+# Devices.
+- extendedWaitUntil:
+    visible: 'Where does Maya use AI\?'
+    timeout: 25000
+- tapOn: "iPhone or iPad"
+- tapOn: 'Computer \(Chrome or Edge\)'
+- tapOn: "Yes"
+- takeScreenshot: w07-devices
+- scrollUntilVisible:
+    element: "Continue"
+    direction: DOWN
+    timeout: 10000
+- tapOn: "Continue"
+
+# Updates.
+- extendedWaitUntil:
+    visible: 'How should we keep you posted\?'
+    timeout: 25000
+- takeScreenshot: w08-updates
+- scrollUntilVisible:
+    element: "Continue"
+    direction: DOWN
+    timeout: 10000
+- tapOn: "Continue"
+
+# Straight to the plan: no Building screen in between.
+- extendedWaitUntil:
+    visible: "See my plan"
+    timeout: 15000
+- takeScreenshot: w09-plan
+- scrollUntilVisible:
+    element: "Not covered.*"
+    direction: DOWN
+    visibilityPercentage: 100
+    timeout: 15000
+    optional: true
+- takeScreenshot: w10-plan-coverage
+- tapOn: "See my plan"
+- extendedWaitUntil:
+    visible: "Save your plan"
+    timeout: 25000
+- takeScreenshot: w11-save-plan
