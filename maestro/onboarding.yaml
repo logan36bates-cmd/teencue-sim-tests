@@ -46,6 +46,12 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible: 'Which AI apps does Maya use\?'
     timeout: 25000
+# At AX5 on the iPhone SE the first app is below the fold (run 5).
+- scrollUntilVisible:
+    element: "ChatGPT"
+    direction: DOWN
+    visibilityPercentage: 50
+    timeout: 10000
 - tapOn: "ChatGPT"
 - tapOn: "Character.AI"
 - takeScreenshot: 21-apps
@@ -61,6 +67,12 @@ appId: ${APP_ID}
     visible: "What would you most want to know about.*"
     timeout: 25000
 - tapOn: "AI companions"
+# Below the fold on the iPhone SE (run 5).
+- scrollUntilVisible:
+    element: "Mental health"
+    direction: DOWN
+    visibilityPercentage: 50
+    timeout: 10000
 - tapOn: "Mental health"
 - takeScreenshot: 22-concerns
 - waitForAnimationToEnd

@@ -31,7 +31,8 @@ appId: ${APP_ID}
     text: "See plans.*|Choose a TeenCue plan.*"
     optional: true
 - extendedWaitUntil:
-    visible: "Sam.s plan is ready"
+    # "Your child’s plan is ready" when the account has no child yet.
+    visible: ".*plan is ready"
     timeout: 30000
     optional: true
 - takeScreenshot: 05-paywall
@@ -92,6 +93,7 @@ appId: ${APP_ID}
 - scrollUntilVisible:
     element: "Heads-up and weekly brief"
     direction: DOWN
+    visibilityPercentage: 50
     timeout: 15000
 - tapOn: "Heads-up and weekly brief"
 - waitForAnimationToEnd

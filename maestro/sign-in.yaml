@@ -24,7 +24,8 @@ appId: ${APP_ID}
     optional: true
 - tapOn: "Sign in"
 - extendedWaitUntil:
-    visible: "Welcome back"
+    # At AX5 the focused email field scrolls the title away (run 5).
+    visible: "Welcome back|Email"
     timeout: 15000
 - takeScreenshot: 02-sign-in
 - tapOn: "you@example.com"

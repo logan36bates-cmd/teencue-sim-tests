@@ -15,6 +15,16 @@ export MAESTRO_DRIVER_STARTUP_TIMEOUT=180000
 
 cmd="$1"; shift
 
+# Boots the simulator and sets the status bar Apple uses in its own screenshots.
+start_sim() {
+  local udid="$1"
+  xcrun simctl boot "$udid"
+  xcrun simctl bootstatus "$udid" -b
+  xcrun simctl status_bar "$udid" override --time 9:41 --dataNetwork wifi --wifiMode active \
+    --wifiBars 3 --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100 || true
+  xcrun simctl ui "$udid" appearance light || true
+}
+
 if [ "$cmd" = boot ]; then
   name="$1"
   type_id=$(xcrun simctl list devicetypes -j | python3 -c "
@@ -33,12 +43,8 @@ print(rs[-1]['identifier'])
   if [ -z "$type_id" ]; then echo "No device type named '$name' on this runner" >&2; exit 1; fi
   echo "Device type $type_id, runtime $runtime_id"
   udid=$(xcrun simctl create "Test $name" "$type_id" "$runtime_id")
-  xcrun simctl boot "$udid"
-  xcrun simctl bootstatus "$udid" -b
-  # The status bar Apple uses in its own screenshots.
-  xcrun simctl status_bar "$udid" override --time 9:41 --dataNetwork wifi --wifiMode active \
-    --wifiBars 3 --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100 || true
-  xcrun simctl ui "$udid" appearance light || true
+  echo "$udid" > .sim-udid
+  start_sim "$udid"
   exit 0
 fi
 
@@ -54,13 +60,27 @@ collect() {
 
 run_flow() {
   local flow="$1" out="$2" debug="$3"
-  # A flow that wedges is stopped after 20 minutes, so the other flows and
+  # A flow that wedges is stopped after 15 minutes, so the other flows and
   # the encrypted upload still happen (run 2: the XCTest driver timed out on
   # the iPad Pro 13 and Maestro hung until the job was cancelled).
-  perl -e 'alarm shift; exec @ARGV' 1200 maestro test "$flows/$flow" \
+  local code=0
+  perl -e 'alarm shift; exec @ARGV' 900 maestro test "$flows/$flow" \
     -e APP_ID="$APP_ID" -e REVIEW_EMAIL="$REVIEW_EMAIL" -e REVIEW_PASSWORD="$REVIEW_PASSWORD" \
-    --test-output-dir "$debug" || status=1
+    --test-output-dir "$debug" || code=$?
   collect "$debug" "$out"
+  [ "$code" -eq 0 ] || status=1
+  # 142 is the alarm. Once the XCTest driver wedges it never starts again on
+  # that simulator (run 5: every later flow on macos-26 failed with "iOS
+  # driver not ready"), so the simulator is restarted for the next flow.
+  if [ "$code" -eq 142 ]; then
+    echo "Flow $flow stopped after 15 minutes: restarting the simulator"
+    pkill -f maestro-driver || true
+    pkill -f xcodebuild || true
+    local udid; udid=$(cat "$root/.sim-udid")
+    xcrun simctl shutdown "$udid" || true
+    start_sim "$udid"
+    xcrun simctl ui booted content_size "$size" || true
+  fi
 }
 
 if [ "$cmd" = walk ]; then
