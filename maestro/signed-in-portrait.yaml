@@ -1,0 +1,8 @@
+# signed-in.yaml upright.
+appId: ${APP_ID}
+---
+- setOrientation: PORTRAIT
+- runFlow:
+    file: signed-in.yaml
+    env:
+      SHOT: P

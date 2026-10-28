@@ -1,0 +1,12 @@
+# signed-in.yaml with the iPad turned sideways. The hook turns it upright
+# again even when a step fails: a failed landscape run (28 Oct, stale
+# password) left the next flow running sideways, and that flow failed too.
+appId: ${APP_ID}
+onFlowComplete:
+  - setOrientation: PORTRAIT
+---
+- setOrientation: LANDSCAPE_LEFT
+- runFlow:
+    file: signed-in.yaml
+    env:
+      SHOT: L

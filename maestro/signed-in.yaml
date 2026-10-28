@@ -1,0 +1,44 @@
+# Signed in only, for a quick look at one device: Home, Account, Choose a
+# TeenCue plan, the paywall (top, terms, links) and the sample dashboard a
+# closed paywall leads to. Run through signed-in-portrait.yaml or
+# signed-in-landscape.yaml, which set SHOT to P or L.
+appId: ${APP_ID}
+---
+- runFlow:
+    file: sign-in.yaml
+    env:
+      EMAIL: ${REVIEW_EMAIL}
+      PASSWORD: ${REVIEW_PASSWORD}
+- waitForAnimationToEnd
+- takeScreenshot: ${SHOT}40-home
+- scroll
+- takeScreenshot: ${SHOT}41-home-scrolled
+- tapOn: "Account, plan and settings"
+- waitForAnimationToEnd
+- takeScreenshot: ${SHOT}42-account
+- scrollUntilVisible:
+    element: "See plans.*|Choose a TeenCue plan.*"
+    direction: DOWN
+    visibilityPercentage: 50
+    timeout: 15000
+- takeScreenshot: ${SHOT}43-account-plan-card
+- tapOn: "See plans.*|Choose a TeenCue plan.*"
+- extendedWaitUntil:
+    visible: ".*plan is ready|.*TeenCue plan.*"
+    timeout: 30000
+- waitForAnimationToEnd
+- takeScreenshot: ${SHOT}44-paywall
+- scroll
+- takeScreenshot: ${SHOT}45-paywall-middle
+- scroll
+- takeScreenshot: ${SHOT}46-paywall-terms
+- scroll
+- takeScreenshot: ${SHOT}47-paywall-links
+- tapOn:
+    text: "Close"
+    optional: true
+- extendedWaitUntil:
+    visible: "A sample of what.*"
+    timeout: 15000
+    optional: true
+- takeScreenshot: ${SHOT}48-after-close

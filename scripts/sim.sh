@@ -58,6 +58,13 @@ collect() {
   rmdir "$out/failures" 2>/dev/null || true
 }
 
+# The simulator saves landscape screenshots sideways, turned clockwise:
+# turn them back (-r 90 left the 28 Oct run upside down).
+upright() {
+  for f in "$1"/*.png "$1"/failures/*.png; do [ -e "$f" ] && sips -r 270 "$f" >/dev/null; done
+  return 0
+}
+
 run_flow() {
   local flow="$1" out="$2" debug="$3"
   # A flow that wedges is stopped after 15 minutes, so the other flows and
@@ -103,16 +110,17 @@ if [ "$cmd" = walk ]; then
       # FLOWS names the flows to run instead, e.g. "redesign main".
       for f in $FLOWS; do
         run_flow "$f.yaml" "$root/screens/$slug/$label-$f" "$root/maestro-debug/$slug/$label-$f"
+        case "$f" in *landscape*) upright "$root/screens/$slug/$label-$f" ;; esac
       done
     else
       run_flow onboarding.yaml "$root/screens/$slug/$label-onboarding" "$root/maestro-debug/$slug/$label-onboarding"
       run_flow main.yaml "$root/screens/$slug/$label" "$root/maestro-debug/$slug/$label"
     fi
-    if [ "$ipad" = true ] && [ "${LANDSCAPE:-true}" = true ]; then
+    # Named flows run alone: a landscape one is named like any other.
+    if [ "$ipad" = true ] && [ "${LANDSCAPE:-true}" = true ] && [ -z "${FLOWS:-}" ]; then
       out="$root/screens/$slug/$label-landscape"
       run_flow landscape.yaml "$out" "$root/maestro-debug/$slug/$label-landscape"
-      # The simulator saves landscape screenshots sideways: turn them upright.
-      for f in "$out"/*.png; do [ -e "$f" ] && sips -r 90 "$f" >/dev/null; done
+      upright "$out"
     fi
   done
   exit $status

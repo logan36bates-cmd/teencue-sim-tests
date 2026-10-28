@@ -69,14 +69,16 @@ appId: ${APP_ID}
 - tapOn: "Poe"
 - waitForAnimationToEnd
 - takeScreenshot: w03-apps-deepseek-poe
+# The exact label, and half in view is enough: on the iPad Air 11 the
+# driver crashed reading the screen at this step (28 Oct).
 - scrollUntilVisible:
-    element: "Snapchat.*"
+    element: "Snapchat My AI"
     direction: DOWN
-    visibilityPercentage: 100
+    visibilityPercentage: 50
     timeout: 10000
     optional: true
 - tapOn:
-    text: "Snapchat.*"
+    text: "Snapchat My AI"
     optional: true
 - waitForAnimationToEnd
 - takeScreenshot: w04-apps-end

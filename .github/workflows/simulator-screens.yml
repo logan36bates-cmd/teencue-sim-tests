@@ -25,18 +25,47 @@ on:
         description: Flows to run instead of onboarding and main, e.g. "redesign main" (blank for the usual)
         type: string
         default: ''
+      device:
+        description: Only this device, by slug (ipad-pro-13, iphone-17-pro-max, ipad-air-11, ipad-mini, iphone-se); blank for all
+        type: string
+        default: ''
+      sizes:
+        description: Text sizes, e.g. "large" for the default only (blank for default and the largest)
+        type: string
+        default: ''
 
 permissions:
   contents: read
 
 jobs:
+  # Picks the devices: all five, the two App Store sizes for a submission
+  # run, or the one named in "device".
+  pick:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+    steps:
+      - id: m
+        env:
+          SUBMISSION: ${{ inputs.submission }}
+          DEVICE: ${{ inputs.device }}
+          ALL: '[{"image":"macos-26","device":"iPad Pro 13-inch (M5)","slug":"ipad-pro-13","ipad":true},{"image":"macos-26","device":"iPhone 17 Pro Max","slug":"iphone-17-pro-max","ipad":false},{"image":"macos-26","device":"iPad Air 11-inch (M4)","slug":"ipad-air-11","ipad":true},{"image":"macos-26","device":"iPad mini (A17 Pro)","slug":"ipad-mini","ipad":true},{"image":"macos-15","device":"iPhone SE (3rd generation)","slug":"iphone-se","ipad":false}]'
+        run: |
+          set -euo pipefail
+          m="$ALL"
+          if [ "$SUBMISSION" = true ]; then m=$(jq -c '.[:2]' <<<"$m"); fi
+          if [ -n "$DEVICE" ]; then m=$(jq -c --arg d "$DEVICE" 'map(select(.slug == $d))' <<<"$m"); fi
+          if [ "$(jq length <<<"$m")" = 0 ]; then echo "No device matches '$DEVICE'" >&2; exit 1; fi
+          echo "matrix=$m" >> "$GITHUB_OUTPUT"
+
   screens:
+    needs: pick
     strategy:
       fail-fast: false
       # The two App Store sizes (13" iPad, 6.9" iPhone) come first; a
       # submission run stops there.
       matrix:
-        include: ${{ fromJSON(inputs.submission && '[{"image":"macos-26","device":"iPad Pro 13-inch (M5)","slug":"ipad-pro-13","ipad":true},{"image":"macos-26","device":"iPhone 17 Pro Max","slug":"iphone-17-pro-max","ipad":false}]' || '[{"image":"macos-26","device":"iPad Pro 13-inch (M5)","slug":"ipad-pro-13","ipad":true},{"image":"macos-26","device":"iPhone 17 Pro Max","slug":"iphone-17-pro-max","ipad":false},{"image":"macos-26","device":"iPad Air 11-inch (M4)","slug":"ipad-air-11","ipad":true},{"image":"macos-26","device":"iPad mini (A17 Pro)","slug":"ipad-mini","ipad":true},{"image":"macos-15","device":"iPhone SE (3rd generation)","slug":"iphone-se","ipad":false}]') }}
+        include: ${{ fromJSON(needs.pick.outputs.matrix) }}
     runs-on: ${{ inputs.intel && format('{0}-intel', matrix.image) || matrix.image }}
     timeout-minutes: 120
     env:
@@ -82,7 +111,7 @@ jobs:
         run: xcrun simctl install booted "$APP_PATH"
       - name: Walk the flows at each text size
         env:
-          SIZES: ${{ inputs.submission && 'large' || '' }}
+          SIZES: ${{ inputs.submission && 'large' || inputs.sizes }}
           LANDSCAPE: ${{ inputs.submission && 'false' || 'true' }}
           RETRY: ${{ inputs.submission && '1' || '0' }}
           FLOWS: ${{ inputs.flows }}

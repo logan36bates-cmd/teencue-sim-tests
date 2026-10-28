@@ -1,6 +1,9 @@
 # iPad in landscape: Home, the child's page and the paywall. Ends in portrait
-# so the next run starts upright.
+# so the next run starts upright, by the hook even when a step fails
+# (28 Oct: a failed landscape run left the next flow sideways).
 appId: ${APP_ID}
+onFlowComplete:
+  - setOrientation: PORTRAIT
 ---
 - setOrientation: LANDSCAPE_LEFT
 - runFlow:
