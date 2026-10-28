@@ -1,0 +1,60 @@
+# Sign in on an iPad turned sideways, a screenshot at each step, for the
+# build 16 keyboard fix:
+#   L01  Sign in just opened: the keyboard should NOT be up by itself
+#   L02  Email tapped: Email and Password both in view above the keyboard
+#   L03  email typed, on to the password
+#   L04  Home reached
+# Ends upright, by the hook, even when a step fails.
+appId: ${APP_ID}
+onFlowComplete:
+  - setOrientation: PORTRAIT
+---
+- launchApp:
+    clearState: true
+    permissions:
+      notifications: deny
+- setOrientation: LANDSCAPE_LEFT
+- extendedWaitUntil:
+    visible: "TeenCue|TEENCUE"
+    timeout: 60000
+- scrollUntilVisible:
+    element: "Already have an account.*"
+    direction: DOWN
+    timeout: 10000
+    optional: true
+- tapOn: "Sign in"
+- extendedWaitUntil:
+    visible: "Welcome back"
+    timeout: 15000
+- waitForAnimationToEnd
+- takeScreenshot: L01-sign-in-arrived
+- tapOn: "you@example.com"
+# The fields scroll into view 300 ms after the focus, once the keyboard is up.
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: L02-email-tapped
+- inputText: ${REVIEW_EMAIL}
+- pressKey: Enter
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: L03-password-focused
+- inputText: ${REVIEW_PASSWORD}
+- pressKey: Enter
+# The same save-password sheet handling as sign-in.yaml.
+- extendedWaitUntil:
+    visible: "Not Now|Finish setting up.*|Home, your family"
+    timeout: 30000
+    optional: true
+- repeat:
+    while:
+      notVisible: "Home, your family"
+    times: 15
+    commands:
+      - tapOn:
+          text: "Not Now"
+          optional: true
+      - waitForAnimationToEnd
+- extendedWaitUntil:
+    visible: "Home, your family"
+    timeout: 30000
+- takeScreenshot: L04-home
