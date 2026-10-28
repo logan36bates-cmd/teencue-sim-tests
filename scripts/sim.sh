@@ -11,7 +11,7 @@
 set -euo pipefail
 
 # The Intel runners start the XCTest driver slowly.
-export MAESTRO_DRIVER_STARTUP_TIMEOUT=180000
+export MAESTRO_DRIVER_STARTUP_TIMEOUT=${MAESTRO_DRIVER_STARTUP_TIMEOUT:-180000}
 
 cmd="$1"; shift
 
