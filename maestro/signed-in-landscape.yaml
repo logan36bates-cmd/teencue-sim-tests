@@ -10,3 +10,4 @@ onFlowComplete:
     file: signed-in.yaml
     env:
       SHOT: L
+      ORIENT: landscape

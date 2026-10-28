@@ -6,6 +6,8 @@
 #   L04  Home reached
 # Ends upright, by the hook, even when a step fails.
 appId: ${APP_ID}
+env:
+  ORIENT: landscape
 onFlowComplete:
   - setOrientation: PORTRAIT
 ---
@@ -30,8 +32,12 @@ onFlowComplete:
 - takeScreenshot: L01-sign-in-arrived
 - tapOn: "you@example.com"
 # The fields scroll into view 300 ms after the focus, once the keyboard is up.
-- waitForAnimationToEnd:
-    timeout: 3000
+# waitForAnimationToEnd alone returned before either (run 40777441123), so
+# wait for the Apple button to scroll away, which is the scroll itself.
+- extendedWaitUntil:
+    notVisible: "Sign in with Apple"
+    timeout: 5000
+    optional: true
 - takeScreenshot: L02-email-tapped
 - inputText: ${REVIEW_EMAIL}
 - pressKey: Enter
@@ -53,6 +59,20 @@ onFlowComplete:
       - tapOn:
           text: "Not Now"
           optional: true
+      # The iPad Air 11 too (28 Oct), upright and sideways: where Not Now
+      # sits in each. Below the sheet, both spots on Home are empty.
+      - runFlow:
+          when:
+            true: ${DEVICE == 'ipad-air-11' && (typeof ORIENT == 'undefined' || ORIENT != 'landscape')}
+          commands:
+            - tapOn:
+                point: "41%,59%"
+      - runFlow:
+          when:
+            true: ${DEVICE == 'ipad-air-11' && typeof ORIENT != 'undefined' && ORIENT == 'landscape'}
+          commands:
+            - tapOn:
+                point: "44%,62%"
       - waitForAnimationToEnd
 - extendedWaitUntil:
     visible: "Home, your family"

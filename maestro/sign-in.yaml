@@ -64,6 +64,20 @@ appId: ${APP_ID}
           commands:
             - tapOn:
                 point: "43%,57%"
+      # The iPad Air 11 too (28 Oct), upright and sideways: where Not Now
+      # sits in each. Below the sheet, both spots on Home are empty.
+      - runFlow:
+          when:
+            true: ${DEVICE == 'ipad-air-11' && (typeof ORIENT == 'undefined' || ORIENT != 'landscape')}
+          commands:
+            - tapOn:
+                point: "41%,59%"
+      - runFlow:
+          when:
+            true: ${DEVICE == 'ipad-air-11' && typeof ORIENT != 'undefined' && ORIENT == 'landscape'}
+          commands:
+            - tapOn:
+                point: "44%,62%"
       - waitForAnimationToEnd
 - extendedWaitUntil:
     visible: "Home, your family"
