@@ -110,9 +110,9 @@ appId: ${APP_ID}
 - takeScreenshot: 14-updates
 - tapOn: "Back"
 - scrollUntilVisible:
-    element: "Delete account"
+    element: "Delete account.*"
     direction: DOWN
-- tapOn: "Delete account"
+- tapOn: "Delete account.*"
 - waitForAnimationToEnd
 - takeScreenshot: 15-delete-account
 - tapOn: "Back"
