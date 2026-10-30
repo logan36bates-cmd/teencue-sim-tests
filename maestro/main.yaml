@@ -101,11 +101,11 @@ appId: ${APP_ID}
 - tapOn: "Account, plan and settings"
 - takeScreenshot: 13-account
 - scrollUntilVisible:
-    element: "Heads-up and weekly brief"
+    element: "Heads-up and weekly brief.*"
     direction: DOWN
     visibilityPercentage: 50
     timeout: 15000
-- tapOn: "Heads-up and weekly brief"
+- tapOn: "Heads-up and weekly brief.*"
 - waitForAnimationToEnd
 - takeScreenshot: 14-updates
 - tapOn: "Back"

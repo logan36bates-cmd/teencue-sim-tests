@@ -35,6 +35,10 @@ appId: ${APP_ID}
 # keyboard covers the password field, and a tap on it typed the password
 # into the email (run 2).
 - pressKey: Enter
+# Let focus reach the password field before typing (run 41125979616: the
+# portrait sign-in typed into the email field and the sign-in failed).
+- waitForAnimationToEnd:
+    timeout: 3000
 - inputText: ${PASSWORD}
 # The password field's return key is "Go": it signs in. Tapping the button
 # after closing the keyboard raced the sign-in it had already started.
