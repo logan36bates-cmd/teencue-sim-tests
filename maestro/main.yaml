@@ -1,5 +1,5 @@
 # The main parent flows for the demo parent (one child, Sam, no plan): Home,
-# the child's page, the paywall and its creator code field, the sample
+# the child's page, the paywall (no code field since build 17), the sample
 # dashboard a closed paywall leads to, Connect without a plan, Activity,
 # Account, Updates, Delete account (opened, never confirmed) and sign out.
 # Every step takes a screenshot, so a layout problem shows up even when
@@ -38,11 +38,15 @@ appId: ${APP_ID}
 - takeScreenshot: 05-paywall
 - scroll
 - takeScreenshot: 06-paywall-terms
-- tapOn:
-    text: 'Have a creator code\?'
-    optional: true
-- waitForAnimationToEnd
-- takeScreenshot: 07-paywall-creator-code
+# Build 17 (3.1.1): no code field of ours, only Apple's offer code sheet.
+# The link is checked, not tapped: the simulator has no StoreKit setup.
+- assertNotVisible: 'Have a creator code\?'
+- assertNotVisible: "Creator code"
+- scrollUntilVisible:
+    element: "Redeem an offer code"
+    direction: DOWN
+    timeout: 10000
+- takeScreenshot: 07-paywall-offer-code
 - scroll
 - takeScreenshot: 08-paywall-links
 
