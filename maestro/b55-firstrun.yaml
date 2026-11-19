@@ -78,7 +78,8 @@ appId: ${APP_ID}
     optional: true
 - takeScreenshot: a09-after-night-7s
 # The check build 54 would have failed: the name screen is really there.
-- assertVisible: "First, what.s your name\\?"
+# iOS may read the two lines as one label: match the question anywhere in it.
+- assertVisible: ".*First, what.s your name\?.*"
 - assertVisible:
     id: "kb-visible"
 - assertVisible:
