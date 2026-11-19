@@ -1,0 +1,79 @@
+# Build 55: the save sheet, Welcome back and the paywall (see b55-firstrun.yaml for the header).
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    permissions:
+      notifications: deny
+- extendedWaitUntil:
+    visible:
+      id: "early-sign-in"
+    timeout: 90000
+# 2: the save sheet, rising as it does in the flow.
+- stopApp
+- openLink: "teencue://welcome?step=save&motion=1"
+- tapOn:
+    text: "Open"
+    optional: true
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2200
+    optional: true
+- takeScreenshot: b01-save-rising
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 4000
+    optional: true
+- takeScreenshot: b02-save-sheet
+
+# 4: Welcome back.
+- stopApp
+- openLink: "teencue://sign-in"
+- tapOn:
+    text: "Open"
+    optional: true
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 3500
+    optional: true
+- takeScreenshot: d01-sign-in
+- tapOn: "Sign in with email"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 1500
+    optional: true
+- takeScreenshot: d02-sign-in-email
+- runFlow:
+    when:
+      true: ${REVIEW_EMAIL != ''}
+    commands:
+      - tapOn: "Email"
+      - inputText: ${REVIEW_EMAIL}
+      - tapOn: "Password"
+      - inputText: ${REVIEW_PASSWORD}
+      - hideKeyboard:
+          optional: true
+      - tapOn:
+          id: "sign-in-go"
+      - extendedWaitUntil:
+          visible: "__never__"
+          timeout: 12000
+          optional: true
+      - tapOn:
+          text: "Not Now"
+          optional: true
+      # 3: the paywall with the store's real answer for an Apple ID that has never had a trial.
+      - openLink: "teencue://paywall"
+      - tapOn:
+          text: "Open"
+          optional: true
+      - extendedWaitUntil:
+          visible:
+            id: "paywall-buy"
+          timeout: 45000
+          optional: true
+      - extendedWaitUntil:
+          visible: "__never__"
+          timeout: 5000
+          optional: true
+      - takeScreenshot: c01-paywall

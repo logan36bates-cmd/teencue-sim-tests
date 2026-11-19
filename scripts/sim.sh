@@ -102,6 +102,15 @@ if [ "$cmd" = walk ]; then
   root="$PWD"
   flows="$root/maestro"
   status=0
+  # DEVICE_LOG=1: the app's own log (its console lines among them), kept with the screenshots and
+  # encrypted with them. A fresh simulator with no Apple Account: nothing personal is in it.
+  if [ "${DEVICE_LOG:-0}" = 1 ]; then
+    mkdir -p "$root/screens/$slug"
+    xcrun simctl spawn booted log stream --level debug --style compact \
+      --predicate 'process == "TeenCue"' > "$root/screens/$slug/device.log" 2>&1 &
+    log_pid=$!
+    trap 'kill "$log_pid" 2>/dev/null || true' EXIT
+  fi
   # SIZES and LANDSCAPE narrow a run to the App Store screenshots.
   for size in ${SIZES:-large accessibility-extra-extra-extra-large}; do
     label=$([ "$size" = large ] && echo default || echo ax5)

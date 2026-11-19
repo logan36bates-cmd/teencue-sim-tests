@@ -26,9 +26,17 @@ on:
         type: string
         default: ''
       device:
-        description: Only this device, by slug (ipad-pro-13, iphone-17-pro-max, ipad-air-11, ipad-mini, iphone-se); blank for all
+        description: Only this device, by slug (ipad-pro-13, iphone-17-pro-max, iphone-17-pro, ipad-air-11, ipad-mini, iphone-se); blank for all
         type: string
         default: ''
+      to_recipient:
+        description: Encrypt the screenshots to scripts/recipient.pem (a public key; its private half stays on the owner's machine) instead of ARTIFACT_KEY
+        type: boolean
+        default: false
+      device_log:
+        description: Also keep the app's own device log with the screenshots, encrypted the same way
+        type: boolean
+        default: false
       sizes:
         description: Text sizes, e.g. "large" for the default only (blank for default and the largest)
         type: string
@@ -49,7 +57,7 @@ jobs:
         env:
           SUBMISSION: ${{ inputs.submission }}
           DEVICE: ${{ inputs.device }}
-          ALL: '[{"image":"macos-26","device":"iPad Pro 13-inch (M5)","slug":"ipad-pro-13","ipad":true},{"image":"macos-26","device":"iPhone 17 Pro Max","slug":"iphone-17-pro-max","ipad":false},{"image":"macos-26","device":"iPad Air 11-inch (M4)","slug":"ipad-air-11","ipad":true},{"image":"macos-26","device":"iPad mini (A17 Pro)","slug":"ipad-mini","ipad":true},{"image":"macos-15","device":"iPhone SE (3rd generation)","slug":"iphone-se","ipad":false}]'
+          ALL: '[{"image":"macos-26","device":"iPad Pro 13-inch (M5)","slug":"ipad-pro-13","ipad":true},{"image":"macos-26","device":"iPhone 17 Pro Max","slug":"iphone-17-pro-max","ipad":false},{"image":"macos-26","device":"iPhone 17 Pro","slug":"iphone-17-pro","ipad":false},{"image":"macos-26","device":"iPad Air 11-inch (M4)","slug":"ipad-air-11","ipad":true},{"image":"macos-26","device":"iPad mini (A17 Pro)","slug":"ipad-mini","ipad":true},{"image":"macos-15","device":"iPhone SE (3rd generation)","slug":"iphone-se","ipad":false}]'
         run: |
           set -euo pipefail
           m="$ALL"
@@ -115,22 +123,35 @@ jobs:
           LANDSCAPE: ${{ inputs.submission && 'false' || 'true' }}
           RETRY: ${{ inputs.submission && '1' || '0' }}
           FLOWS: ${{ inputs.flows }}
+          DEVICE_LOG: ${{ inputs.device_log && '1' || '0' }}
         run: scripts/sim.sh walk "${{ matrix.slug }}" "${{ matrix.ipad }}"
       - name: Encrypt the screenshots
         if: always()
         env:
           ARTIFACT_KEY: ${{ secrets.ARTIFACT_KEY }}
+          TO_RECIPIENT: ${{ inputs.to_recipient && '1' || '0' }}
         run: |
           set -euo pipefail
           mkdir -p screens
           tar -czf screens.tgz screens
-          openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -md sha256 -salt \
-            -pass env:ARTIFACT_KEY -in screens.tgz -out "screens-${{ matrix.slug }}.tgz.enc"
+          if [ "$TO_RECIPIENT" = 1 ]; then
+            # A fresh random key for this file, sealed with the public key: only the private half opens it.
+            openssl rand -hex 32 > file.key
+            openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -md sha256 -salt \
+              -pass file:file.key -in screens.tgz -out "screens-${{ matrix.slug }}.tgz.enc"
+            openssl pkeyutl -encrypt -pubin -inkey scripts/recipient.pem \
+              -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 \
+              -in file.key -out "screens-${{ matrix.slug }}.key.enc"
+            rm -f file.key
+          else
+            openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -md sha256 -salt \
+              -pass env:ARTIFACT_KEY -in screens.tgz -out "screens-${{ matrix.slug }}.tgz.enc"
+          fi
           rm -f screens.tgz
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: screens-${{ matrix.slug }}
-          path: screens-${{ matrix.slug }}.tgz.enc
+          path: screens-${{ matrix.slug }}.*.enc
           retention-days: 1
           if-no-files-found: error

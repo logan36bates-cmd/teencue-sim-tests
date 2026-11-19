@@ -1,0 +1,92 @@
+# Build 55 before/after (teencue-mobile, referrals branch): the four screens the owner flagged
+# on build 54 in TestFlight, on a real iOS Simulator, from a fresh install, signed out.
+#   1  the first run, screen by screen, played for real (no ?step= fixture): screens 1 to 4,
+#      then the screen after the night screen, shot four times as it arrives. It must show
+#      the name question, its field and Continue (build 54 left it blank on an iPhone).
+#   2  the save sheet (fixture, with motion)
+#   3  the paywall, with real StoreKit, for the App Review demo parent (no plan) on a
+#      simulator with no Apple Account: what a brand-new Apple ID is offered
+#   4  "Welcome back" sign-in
+# Never creates an account. Pauses are fixed waits: the first run animates without end.
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+    permissions:
+      notifications: deny
+- extendedWaitUntil:
+    visible:
+      id: "early-sign-in"
+    timeout: 90000
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: a01-wake
+
+# Screen 1 goes on by a tap anywhere above the foot.
+- tapOn:
+    point: "50%,40%"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 5000
+    optional: true
+- takeScreenshot: a02-truth
+- tapOn:
+    id: "flow-next"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 5000
+    optional: true
+- takeScreenshot: a03-privacy
+- tapOn:
+    id: "flow-next"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 1200
+    optional: true
+- takeScreenshot: a04-night-start
+# The scene plays: the kid types, the AI answers, the frost, the heads-up, the two lines.
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 12000
+    optional: true
+- takeScreenshot: a05-night-done
+- tapOn:
+    id: "flow-next"
+- takeScreenshot: a06-after-night-0s
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 700
+    optional: true
+- takeScreenshot: a07-after-night-1s
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 2500
+    optional: true
+- takeScreenshot: a08-after-night-3s
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 4000
+    optional: true
+- takeScreenshot: a09-after-night-7s
+# The check build 54 would have failed: the name screen is really there.
+- assertVisible: "First, what.s your name\\?"
+- assertVisible:
+    id: "kb-visible"
+- assertVisible:
+    id: "flow-continue"
+- inputText: "Jordan"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 1200
+    optional: true
+- takeScreenshot: a10-name-typed
+- tapOn:
+    id: "flow-continue"
+- extendedWaitUntil:
+    visible: "__never__"
+    timeout: 4000
+    optional: true
+- takeScreenshot: a11-met
+
