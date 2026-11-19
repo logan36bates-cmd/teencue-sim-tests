@@ -80,6 +80,11 @@ run_flow() {
       -e APP_ID="$APP_ID" -e REVIEW_EMAIL="$REVIEW_EMAIL" -e REVIEW_PASSWORD="$REVIEW_PASSWORD" \
       -e DEVICE="$slug" --test-output-dir "$debug" || code=$?
     collect "$debug" "$out"
+    # A failed flow stops on the screen that failed it: keep that screen's view tree (every
+    # element's frame), so a layout bug can be read, not guessed (build 55).
+    if [ "$code" -ne 0 ] && [ "${HIERARCHY:-0}" = 1 ]; then
+      perl -e 'alarm shift; exec @ARGV' 120 maestro hierarchy > "$out/hierarchy.json" 2>/dev/null || true
+    fi
     [ "$code" -eq 0 ] && break
     # 142 is the alarm. Once the XCTest driver wedges it never starts again on
     # that simulator (run 5: every later flow on macos-26 failed with "iOS
