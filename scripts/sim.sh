@@ -23,6 +23,9 @@ start_sim() {
   xcrun simctl status_bar "$udid" override --time 9:41 --dataNetwork wifi --wifiMode active \
     --wifiBars 3 --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100 || true
   xcrun simctl ui "$udid" appearance light || true
+  # A fresh simulator shows iOS's one-time "slide to type" tip over the first keyboard, which hides
+  # the app from Maestro (build 55 run 3): mark it as already shown.
+  xcrun simctl spawn "$udid" defaults write com.apple.keyboard.preferences DidShowContinuousPathIntroduction -bool true || true
 }
 
 if [ "$cmd" = boot ]; then
