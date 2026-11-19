@@ -16,8 +16,13 @@ appId: ${APP_ID}
     text: "Open"
     optional: true
 - extendedWaitUntil:
+    visible:
+      id: "sheet-scroll"
+    timeout: 45000
+    optional: true
+- extendedWaitUntil:
     visible: "__never__"
-    timeout: 2200
+    timeout: 500
     optional: true
 - takeScreenshot: b01-save-rising
 - extendedWaitUntil:

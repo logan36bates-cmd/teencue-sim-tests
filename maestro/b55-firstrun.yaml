@@ -24,32 +24,39 @@ appId: ${APP_ID}
     optional: true
 - takeScreenshot: a01-wake
 
-# Screen 1 goes on by a tap anywhere above the foot.
-- tapOn:
-    point: "50%,40%"
+# Screen 1 goes on by itself; then Continue on each story screen until the night screen's
+# lines are there (the walk follows the screens, not fixed timing).
 - extendedWaitUntil:
-    visible: "__never__"
-    timeout: 5000
-    optional: true
+    visible:
+      id: "flow-next"
+    timeout: 20000
 - takeScreenshot: a02-truth
 - tapOn:
     id: "flow-next"
 - extendedWaitUntil:
     visible: "__never__"
-    timeout: 5000
+    timeout: 4000
     optional: true
 - takeScreenshot: a03-privacy
-- tapOn:
-    id: "flow-next"
+- repeat:
+    while:
+      notVisible: "Some nights, it isn.t.*"
+    times: 3
+    commands:
+      - tapOn:
+          id: "flow-next"
+      - extendedWaitUntil:
+          visible: "__never__"
+          timeout: 1200
+          optional: true
+      - takeScreenshot: a04-night-start
+      - extendedWaitUntil:
+          visible: "Some nights, it isn.t.*"
+          timeout: 15000
+          optional: true
 - extendedWaitUntil:
     visible: "__never__"
-    timeout: 1200
-    optional: true
-- takeScreenshot: a04-night-start
-# The scene plays: the kid types, the AI answers, the frost, the heads-up, the two lines.
-- extendedWaitUntil:
-    visible: "__never__"
-    timeout: 12000
+    timeout: 3000
     optional: true
 - takeScreenshot: a05-night-done
 - tapOn:
