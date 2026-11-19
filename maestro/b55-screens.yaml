@@ -11,10 +11,17 @@ appId: ${APP_ID}
     timeout: 90000
 # 2: the save sheet, rising as it does in the flow.
 - stopApp
-- openLink: "teencue://welcome?step=save&motion=1"
-- tapOn:
-    text: "Open"
-    optional: true
+- retry:
+    maxRetries: 2
+    commands:
+      - openLink: "teencue://welcome?step=save&motion=1"
+      - extendedWaitUntil:
+          visible: "Open"
+          timeout: 8000
+          optional: true
+      - tapOn:
+          text: "Open"
+          optional: true
 - extendedWaitUntil:
     visible:
       id: "sheet-scroll"
@@ -33,10 +40,17 @@ appId: ${APP_ID}
 
 # 4: Welcome back.
 - stopApp
-- openLink: "teencue://sign-in"
-- tapOn:
-    text: "Open"
-    optional: true
+- retry:
+    maxRetries: 2
+    commands:
+      - openLink: "teencue://sign-in"
+      - extendedWaitUntil:
+          visible: "Open"
+          timeout: 8000
+          optional: true
+      - tapOn:
+          text: "Open"
+          optional: true
 - extendedWaitUntil:
     visible: "__never__"
     timeout: 3500
@@ -68,10 +82,17 @@ appId: ${APP_ID}
           text: "Not Now"
           optional: true
       # 3: the paywall with the store's real answer for an Apple ID that has never had a trial.
-      - openLink: "teencue://paywall"
-      - tapOn:
-          text: "Open"
-          optional: true
+      - retry:
+          maxRetries: 2
+          commands:
+            - openLink: "teencue://paywall"
+            - extendedWaitUntil:
+                visible: "Open"
+                timeout: 8000
+                optional: true
+            - tapOn:
+                text: "Open"
+                optional: true
       - extendedWaitUntil:
           visible:
             id: "paywall-buy"
